@@ -5,6 +5,7 @@ import { NgIf, TitleCasePipe } from '@angular/common';
 import { BsDropdownModule } from 'ngx-bootstrap/dropdown';
 import { Router, RouterLink, RouterLinkActive } from '@angular/router';
 import { ToastrService } from 'ngx-toastr';
+import { NgxSpinnerService } from 'ngx-spinner';
 
 @Component({
   selector: 'app-nav',
@@ -17,6 +18,7 @@ export class NavComponent {
   accountService = inject(AccountService);
   private router = inject(Router);
   private toastr = inject(ToastrService);
+  private spinner = inject(NgxSpinnerService)
   model: any = {};
 
 
@@ -37,6 +39,10 @@ export class NavComponent {
     this.accountService.logout();
     void this.router.navigateByUrl('/')
   }
-
+  
+  showSpinner()
+  {
+    this.spinner.show();
+  }
 
 }
