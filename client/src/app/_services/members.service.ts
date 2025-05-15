@@ -8,6 +8,7 @@ import { Photo } from '../_models/photo';
 import { PaginatedResult, Pagination } from '../_models/pagination';
 import { UserParams } from '../_models/userParams';
 import { User } from '../_models/user';
+import { setPaginatedResponse, setPaginationHeaders } from './paginationHelper';
 
 
 @Injectable({
@@ -31,12 +32,12 @@ export class MembersService {
   getMembers() {
     const response = this.memberCache.get(Object.values(this.userParams()).join('-'));
 
-    if(response) return this.setPaginatedResponse(response)
+    if(response) return setPaginatedResponse(response,this.paginationResults)
    
     console.log(Object.values(this.userParams()).join('-'));
     console.log('call method getMembers');
 
-    let params = this.setPaginationHeaders(this.userParams().pageNumber,this.userParams().pageSize);
+    let params = setPaginationHeaders(this.userParams().pageNumber,this.userParams().pageSize);
     params = params.append('minAge', this.userParams().minAge);
     params = params.append('maxAge', this.userParams().maxAge);
     params = params.append('gender', this.userParams().gender);
@@ -47,7 +48,7 @@ export class MembersService {
     return this.http.get<Member[]>(this.baseUrl + 'users', { observe: 'response', params }).subscribe({
       next: response => {
       //console.log(response.body);
-        this.setPaginatedResponse(response);
+        setPaginatedResponse(response,this.paginationResults);
         this.memberCache.set(Object.values(this.userParams()).join('-'), response);
         // this.paginationResults.set({
         //   items:response.body as Member[],
@@ -58,25 +59,25 @@ export class MembersService {
     //return this.http.get<Member[]>(this.baseUrl + 'users', this.getHttpOptions())
   }
 
-  private setPaginatedResponse(response: HttpResponse<Member[]>) {
-    this.paginationResults.set({
-      items: response.body as Member[],
-      pagination: JSON.parse(response.headers.get('Pagination')!)
-    })
-  }
+//   private setPaginatedResponse(response: HttpResponse<Member[]>) {
+//     this.paginationResults.set({
+//       items: response.body as Member[],
+//       pagination: JSON.parse(response.headers.get('Pagination')!)
+//     })
+//   }
 
 
- private setPaginationHeaders(pageNumber:number,pageSize:number){
+//  private setPaginationHeaders(pageNumber:number,pageSize:number){
 
-  let params = new HttpParams();
+//   let params = new HttpParams();
 
-    if (pageNumber && pageSize) {
-      params = params.append('pageNumber', pageNumber);
-      params = params.append('pageSize', pageSize);
-    }
+//     if (pageNumber && pageSize) {
+//       params = params.append('pageNumber', pageNumber);
+//       params = params.append('pageSize', pageSize);
+//     }
 
-    return params;
- }
+//     return params;
+//  }
 
 
   getMember(username: string) {
